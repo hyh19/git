@@ -19,10 +19,10 @@ DOWNLOAD_URL="https://www.kernel.org/pub/software/scm/git/${ARCHIVE_NAME}"
 ARCHIVE_FILE="${WORKING_DIR}/${ARCHIVE_NAME}"
 # 源码目录，源码解压后所在的目录。
 SOURCE_DIR="${WORKING_DIR}/${GIT_VERSION}"
-# 安装目录的父目录
-BASE_DIR="/usr/local/git"
+# 安装目录的根目录
+INSTALL_ROOT="/usr/local/git"
 # 安装目录
-INSTALL_DIR="/${BASE_DIR}/{$GIT_VERSION}"
+INSTALL_DIR="/${INSTALL_ROOT}/{$GIT_VERSION}"
 
 cd $WORKING_DIR
 
