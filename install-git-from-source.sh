@@ -49,10 +49,6 @@ function install_dependencies_with_yum() {
     yum install asciidoc xmlto docbook2X -y
 }
 
-# 使用 apt 安装依赖
-function install_dependencies_with_apt() {
-}
-
 # 编译和安装源码
 function make_and_install() {
     # 创建安装目录
@@ -84,7 +80,7 @@ fi
 if CHECK_SYS_SCRIPT_SAVE_PATH "packageManager" "yum"; then
     install_dependencies_with_yum
 elif CHECK_SYS_SCRIPT_SAVE_PATH "packageManager" "apt"; then
-    install_dependencies_with_apt
+    echo "apt..."
 else
     echo "[ERROR] Not supported distro."
     exit 1
