@@ -77,9 +77,9 @@ else
 fi
 
 # 安装依赖
-if CHECK_SYS_SCRIPT_SAVE_PATH "packageManager" "yum"; then
+if check_sys "packageManager" "yum"; then
     install_dependencies_with_yum
-elif CHECK_SYS_SCRIPT_SAVE_PATH "packageManager" "apt"; then
+elif check_sys "packageManager" "apt"; then
     echo "apt..."
 else
     echo "[ERROR] Not supported distro."
