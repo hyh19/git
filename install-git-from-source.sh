@@ -118,6 +118,13 @@ tar zxvf $ARCHIVE_SAVE_PATH
 # 开始编译和安装
 make_and_install
 
+# 创建符号链接
+if [ -L "$CURRENT_VERSION" ]; then
+    rm -f $CURRENT_VERSION
+fi
+
+ln -s $INSTALL_DIR $CURRENT_VERSION
+
 # 配置二进制文件路径
 config_binary_path
 
