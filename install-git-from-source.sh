@@ -55,6 +55,11 @@ function make_and_install() {
     mkdir -p $INSTALL_DIR
     # 进入源码目录
     cd $SOURCE_DIR
+
+    make configure
+    ./configure --prefix=$INSTALL_DIR
+    make all doc info
+    make install install-doc install-html install-info
 }
 
 # 配置二进制文件路径
