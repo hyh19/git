@@ -1,48 +1,126 @@
 #!/usr/bin/env bash
 
-yum install epel-release -y
-yum install wget tar autoconf automake libtool -y
-yum install dh-autoreconf libcurl-devel expat-devel gettext-devel openssl-devel perl-devel zlib-devel -y
-yum install asciidoc xmlto docbook2X -y
-
-ln -s /usr/bin/db2x_docbook2texi /usr/bin/docbook2x-texi
-
 # 工作目录
-WORKING_DIR="/tmp"
-# 安装版本
-GIT_VERSION="git-2.15.0"
-# 源码包名字
-ARCHIVE_NAME="${GIT_VERSION}.tar.gz"
-# 源码包下载地址
-DOWNLOAD_URL="https://www.kernel.org/pub/software/scm/git/${ARCHIVE_NAME}"
-# 源码包下载到本地后的路径
-ARCHIVE_FILE="${WORKING_DIR}/${ARCHIVE_NAME}"
-# 源码目录，源码解压后所在的目录。
-SOURCE_DIR="${WORKING_DIR}/${GIT_VERSION}"
-# 安装目录的根目录
-INSTALL_ROOT="/usr/local/git"
-# 安装目录
-INSTALL_DIR="/${INSTALL_ROOT}/${GIT_VERSION}"
+WORKING_DIR=/tmp
 
+# 软件名称
+SOFTWARE_NAME=git
+
+# 软件版本
+SOFTWARE_VERSION=2.15.0
+
+# 源码包名称
+ARCHIVE_NAME="${SOFTWARE_NAME}-${SOFTWARE_VERSION}.tar.gz"
+
+# 源码包下载地址
+ARCHIVE_DOWNLOAD_URL="https://www.kernel.org/pub/software/scm/git/${ARCHIVE_NAME}"
+
+# 源码包解压后目录名称
+SOURCE_DIR_NAME="${SOFTWARE_NAME}-${SOFTWARE_VERSION}"
+
+# 源码包保存路径
+ARCHIVE_SAVE_PATH="${WORKING_DIR}/${ARCHIVE_NAME}"
+
+# 源码所在目录
+SOURCE_DIR="${WORKING_DIR}/${SOURCE_DIR_NAME}"
+
+# 安装目录的根目录
+INSTALL_ROOT=/usr/local/${SOFTWARE_NAME}
+
+# 安装目录
+INSTALL_DIR="/${INSTALL_ROOT}/${SOFTWARE_NAME}-${SOFTWARE_VERSION}"
+
+# 当前使用版本的符号链接
+CURRENT_VERSION="${INSTALL_ROOT}/current"
+
+# 二进制文件路径的配置文件
+SOFTWARE_PROFILE="/etc/profile.d/${SOFTWARE_NAME}.sh"
+
+# 判断 Linux 发行版本的脚本
+CHECK_SYS_SCRIPT_NAME="check_sys.sh"
+CHECK_SYS_SCRIPT_DOWNLOAD_URL="https://github.com/mrhuangyuhui/shell/raw/snippets/${CHECK_SYS_SCRIPT_NAME}"
+CHECK_SYS_SCRIPT_SAVE_PATH="${WORKING_DIR}/${CHECK_SYS_SCRIPT_NAME}"
+
+# 使用 yum 安装依赖
+function install_dependencies_with_yum() {
+    yum install epel-release -y
+    yum install wget tar autoconf automake libtool -y
+    yum install dh-autoreconf libcurl-devel expat-devel gettext-devel openssl-devel perl-devel zlib-devel -y
+    yum install asciidoc xmlto docbook2X -y
+}
+
+# 使用 apt 安装依赖
+function install_dependencies_with_apt() {
+    # 
+}
+
+# 编译和安装源码
+function make_and_install() {
+    # 创建安装目录
+    mkdir -p $INSTALL_DIR
+    # 进入源码目录
+    cd $SOURCE_DIR
+}
+
+# 配置二进制文件路径
+function config_binary_path() {
+    echo "${INSTALL_ROOT}/${SOFTWARE_NAME}/bin" > $SOFTWARE_PROFILE
+}
+
+# 进入工作目录
 cd $WORKING_DIR
 
-if [ ! -e "$ARCHIVE_FILE" ]; then
-    wget $DOWNLOAD_URL
+# 下载判断发行版本的脚本
+rm -f $CHECK_SYS_SCRIPT_SAVE_PATH
+wget -O $CHECK_SYS_SCRIPT_SAVE_PATH $CHECK_SYS_SCRIPT_DOWNLOAD_URL
+
+if [ -e "$CHECK_SYS_SCRIPT_SAVE_PATH" ]; then
+    . $CHECK_SYS_SCRIPT_SAVE_PATH
+else
+    echo "[ERROR] Download ${CHECK_SYS_SCRIPT_NAME} failed."
+    exit 1
 fi
 
+# 安装依赖
+if CHECK_SYS_SCRIPT_SAVE_PATH "packageManager" "yum"; then
+    install_dependencies_with_yum
+elif CHECK_SYS_SCRIPT_SAVE_PATH "packageManager" "apt"; then
+    install_dependencies_with_apt
+else
+    echo "[ERROR] Not supported distro."
+    exit 1
+fi
+
+# 下载源码包
+if [ ! -e "$ARCHIVE_SAVE_PATH" ]; then
+    wget -O $ARCHIVE_SAVE_PATH $ARCHIVE_DOWNLOAD_URL
+fi
+
+# 下载失败，不再继续。
+if [ ! -e "$ARCHIVE_SAVE_PATH" ]; then
+    echo "[ERROR] Download ${ARCHIVE_NAME} failed."
+    exit 1
+fi
+
+# 备份旧的源码目录
 if [ -d "$SOURCE_DIR" ]; then
-    rm -rf $SOURCE_DIR
+    mv $SOURCE_DIR "${SOURCE_DIR}-$(date +%Y%m%d%H%M%S)"
 fi
 
-tar -zxf $ARCHIVE_FILE
-
+# 备份旧的安装目录
 if [ -d "$INSTALL_DIR" ]; then
-    rm -rf $INSTALL_DIR
+    mv $INSTALL_DIR "${INSTALL_DIR}-$(date +%Y%m%d%H%M%S)"
 fi
 
-cd $SOURCE_DIR
+# 解压源码包
+tar zxvf $ARCHIVE_SAVE_PATH
 
-make configure
-./configure --prefix=$INSTALL_DIR
-make all doc info
-make install install-doc install-html install-info
+# 开始编译和安装
+make_and_install
+
+# 配置二进制文件路径
+config_binary_path
+
+echo "################################################################################"
+echo "# Open a new terminal or enter: source ${SOFTWARE_PROFILE}"
+echo "################################################################################"
