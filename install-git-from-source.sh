@@ -47,6 +47,7 @@ function install_dependencies_with_yum() {
     yum install wget tar autoconf automake libtool -y
     yum install dh-autoreconf libcurl-devel expat-devel gettext-devel openssl-devel perl-devel zlib-devel -y
     yum install asciidoc xmlto docbook2X -y
+    ln -s /usr/bin/db2x_docbook2texi /usr/bin/docbook2x-texi
 }
 
 # 编译和安装源码
