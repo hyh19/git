@@ -65,7 +65,7 @@ function make_and_install() {
 
 # 配置二进制文件路径
 function config_binary_path() {
-    echo "export PATH=${PATH}:${CURRENT_VERSION}/bin" > $SOFTWARE_PROFILE
+    echo "export PATH=\${PATH}:${CURRENT_VERSION}/bin" > $SOFTWARE_PROFILE
 }
 
 # 进入工作目录
