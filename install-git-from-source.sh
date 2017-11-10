@@ -50,6 +50,14 @@ function install_dependencies_with_yum() {
     ln -s /usr/bin/db2x_docbook2texi /usr/bin/docbook2x-texi
 }
 
+# 使用 apt 安装依赖
+function install_dependencies_with_apt() {
+    apt-get install wget tar
+    apt-get install dh-autoreconf libcurl4-gnutls-dev libexpat1-dev  gettext zlib1g-dev libssl-dev -y
+    apt-get install asciidoc xmlto docbook2x -y
+    ln -s /usr/bin/db2x_docbook2texi /usr/bin/docbook2x-texi
+}
+
 # 编译和安装源码
 function make_and_install() {
     # 创建安装目录
@@ -86,7 +94,7 @@ fi
 if check_sys "packageManager" "yum"; then
     install_dependencies_with_yum
 elif check_sys "packageManager" "apt"; then
-    echo "apt..."
+    install_dependencies_with_apt
 else
     echo "[ERROR] Not supported distro."
     exit 1
