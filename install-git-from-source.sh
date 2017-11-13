@@ -44,7 +44,7 @@ CHECK_SYS_SCRIPT_SAVE_PATH="${WORKING_DIR}/${CHECK_SYS_SCRIPT_NAME}"
 # 使用 yum 安装依赖
 function install_dependencies_with_yum() {
     yum install epel-release -y
-    yum install wget tar autoconf automake libtool -y
+    yum install autoconf automake libtool -y
     yum install dh-autoreconf libcurl-devel expat-devel gettext-devel openssl-devel perl-devel zlib-devel -y
     yum install asciidoc xmlto docbook2X -y
     ln -s /usr/bin/db2x_docbook2texi /usr/bin/docbook2x-texi
@@ -52,7 +52,7 @@ function install_dependencies_with_yum() {
 
 # 使用 apt 安装依赖
 function install_dependencies_with_apt() {
-    apt-get install wget tar
+    apt-get update
     apt-get install dh-autoreconf libcurl4-gnutls-dev libexpat1-dev  gettext zlib1g-dev libssl-dev -y
     apt-get install asciidoc xmlto docbook2x -y
     ln -s /usr/bin/db2x_docbook2texi /usr/bin/docbook2x-texi
